@@ -11,8 +11,9 @@ A browser-style web proxy designed to feel more like a real browser than a tradi
 <br>
 
 [![ScramJet](https://img.shields.io/badge/Powered%20by-ScramJet-111111?style=for-the-badge)](https://github.com/MercuryWorkshop/scramjet)
-[![BareMux](https://img.shields.io/badge/Transport-BareMux-111111?style=for-the-badge)](https://github.com/MercuryWorkshop/BareMux)
-[![Wisp](https://img.shields.io/badge/Transport-Wisp-111111?style=for-the-badge)](https://github.com/MercuryWorkshop/wisp-server-node)
+[![BareMux](https://img.shields.io/badge/Transport-BareMux-111111?style=for-the-badge)](https://github.com/)
+[![Epoxy](https://img.shields.io/badge/Transport-Epoxy-111111?style=for-the-badge)]([https://github.com/MercuryWorkshop/epoxy-tls])
+[![Wisp](https://img.shields.io/badge/Transport-Wisp-111111?style=for-the-badge)](https://github.com/MercuryWorkshop/wisp-protocol)
 
 </div>
 
