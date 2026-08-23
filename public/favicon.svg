@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="metal" x1="12" y1="54" x2="52" y2="10" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#555b62"/>
+      <stop offset=".5" stop-color="#f4f4ef"/>
+      <stop offset="1" stop-color="#a79a81"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#050505"/>
+  <ellipse cx="32" cy="32" rx="25" ry="10" fill="none" stroke="#aeb4bb" stroke-width="2" transform="rotate(-35 32 32)" opacity=".8"/>
+  <path d="M32 13 17 51h8l3.5-9h7L39 51h8L32 13Zm0 14 3 9h-6l3-9Z" fill="url(#metal)"/>
+  <circle cx="51" cy="18" r="2.5" fill="#fff"/>
+</svg>

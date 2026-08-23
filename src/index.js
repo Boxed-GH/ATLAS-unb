@@ -11,6 +11,16 @@ import { baremuxPath } from "@mercuryworkshop/bare-mux/node";
 
 const publicPath = fileURLToPath(new URL("../public/", import.meta.url));
 
+const quickIconSources = {
+	youtube: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/1280px-YouTube_full-color_icon_%282017%29.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail",
+	tiktok: "https://images.seeklogo.com/logo-png/37/2/tiktok-app-icon-logo-png_seeklogo-373800.png",
+	discord: "https://static.vecteezy.com/system/resources/previews/023/741/147/non_2x/discord-logo-icon-social-media-icon-free-png.png",
+	github: "https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/github-white-icon.png",
+	geforce: "https://favicons.statusgator.com/d7rU8nLKAMsZp0M4.png",
+	cineby: "https://cinebyhd.com/wp-content/uploads/2026/05/cineby-logo.webp",
+	chatgpt: "https://www.freeiconspng.com/uploads/green-square-chatgpt-logo-png-icon-2.png",
+};
+
 // Wisp Configuration: Refer to the documentation at https://www.npmjs.com/package/@mercuryworkshop/wisp-js
 
 logging.set_level(logging.NONE);
@@ -38,6 +48,20 @@ const fastify = Fastify({
 fastify.register(fastifyStatic, {
 	root: publicPath,
 	decorateReply: true,
+});
+
+fastify.get("/quick-icons/:name", async (request, reply) => {
+	const source = quickIconSources[request.params.name];
+	if (!source) return reply.code(404).send();
+	try {
+		const response = await fetch(source, { headers: { "user-agent": "Atlas Quick Links" } });
+		if (!response.ok) return reply.code(response.status).send();
+		reply.header("cache-control", "public, max-age=86400");
+		reply.type(response.headers.get("content-type") || "image/png");
+		return reply.send(Buffer.from(await response.arrayBuffer()));
+	} catch (error) {
+		return reply.code(502).send();
+	}
 });
 
 fastify.register(fastifyStatic, {
