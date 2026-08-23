@@ -1,13 +1,184 @@
 <!doctype html>
 <html>
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
-		<title>Error</title>
-		<base href="/" />
-		<link rel="stylesheet" href="index.css" />
-	</head>
-	<body>
-		<p>404</p>
-	</body>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+    <title>PAGE 404</title>
+    <base href="/" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #000;
+            color: #ddd;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        .content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(6px);
+            border-radius: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        h1 {
+            font-size: 8rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            background: linear-gradient(135deg, #ccc, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            font-size: 1.1rem;
+            color: #888;
+            margin: -0.5rem 0 1.8rem 0;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        .brand {
+            font-size: 0.8rem;
+            color: #777;
+            letter-spacing: 0.4em;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.7rem 2.2rem;
+            border-radius: 40px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #bbb;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            text-decoration: none;
+            backdrop-filter: blur(4px);
+            transition: 0.25s ease;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particles"></canvas>
+    <div class="content">
+        <div class="brand">PAGE 404 NOT</div>
+        <h1>404</h1>
+        <div class="subtitle">We searched the universe, traveled back i time, and still couldn't find you page</div>
+    </div>
+    <script>
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        let w = canvas.width = window.innerWidth;
+        let h = canvas.height = window.innerHeight;
+        let mouse = { x: -1000, y: -1000 };
+        const PARTICLE_COUNT = 500;
+        const REPEL_RADIUS = 130;
+        const REPEL_FORCE = 6;
+
+        const particles = [];
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            particles.push({
+                originX: Math.random() * w,
+                originY: Math.random() * h,
+                x: Math.random() * w,
+                y: Math.random() * h,
+                radius: Math.random() * 2.5 + 0.8,
+                alpha: Math.random() * 0.4 + 0.15,
+                brightness: Math.floor(Math.random() * 40 + 60)
+            });
+        }
+
+        canvas.addEventListener('mousemove', e => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            mouse.x = -1000;
+            mouse.y = -1000;
+        });
+
+        window.addEventListener('resize', () => {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+            for (let p of particles) {
+                p.originX = Math.random() * w;
+                p.originY = Math.random() * h;
+                p.x = p.originX;
+                p.y = p.originY;
+            }
+        });
+
+        function draw() {
+            ctx.clearRect(0, 0, w, h);
+
+            for (let p of particles) {
+                let dx = p.x - mouse.x;
+                let dy = p.y - mouse.y;
+                let dist = Math.hypot(dx, dy);
+                if (dist < REPEL_RADIUS && dist > 0) {
+                    let force = (REPEL_RADIUS - dist) / REPEL_RADIUS * REPEL_FORCE;
+                    p.x = p.originX + (dx / dist) * force * 10;
+                    p.y = p.originY + (dy / dist) * force * 10;
+                } else {
+                    p.x += (p.originX - p.x) * 0.06;
+                    p.y += (p.originY - p.y) * 0.06;
+                }
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `hsla(0, 0%, ${p.brightness}%, ${p.alpha})`;
+                ctx.shadowColor = `hsla(0, 0%, 100%, 0.15)`;
+                ctx.shadowBlur = 6;
+                ctx.fill();
+            }
+            ctx.shadowBlur = 0;
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.lineWidth = 0.3;
+            for (let i = 0; i < particles.length; i += 2) {
+                for (let j = i + 1; j < Math.min(i + 25, particles.length); j += 2) {
+                    let dx = particles[i].x - particles[j].x;
+                    let dy = particles[i].y - particles[j].y;
+                    let dist = Math.hypot(dx, dy);
+                    if (dist < 90) {
+                        ctx.globalAlpha = (1 - dist / 90) * 0.15;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            ctx.globalAlpha = 1;
+            requestAnimationFrame(draw);
+        }
+        draw();
+    </script>
+</body>
 </html>
