@@ -320,7 +320,7 @@ dockApps.addEventListener("click", () => {
 		dockApps.setAttribute("aria-expanded", String(isOpen));
 		appsPanel.setAttribute("aria-hidden", String(!isOpen));
 });
-dockGames.addEventListener("click", () => navigateTo("https://poki.com"));
+dockGames.addEventListener("click", () => navigateTo("https://mercury-unbl.lovable.app"));
 appsClose.addEventListener("click", () => {
 		document.body.classList.remove("apps-open");
 	dockApps.setAttribute("aria-expanded", "false");
