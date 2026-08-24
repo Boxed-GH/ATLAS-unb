@@ -7,18 +7,44 @@ const error = document.getElementById("sj-error");
 const errorCode = document.getElementById("sj-error-code");
 const canvas = document.getElementById("cosmic-canvas");
 const context = canvas.getContext("2d");
+const title = document.querySelector("h1");
+const titleSampler = document.createElement("canvas");
+const titleSamplerContext = titleSampler.getContext("2d", { willReadFrequently: true });
 const engineSelect = document.getElementById("engine-select");
 const settingsTrigger = document.getElementById("settings-trigger");
+const dockBrowser = document.getElementById("dock-browser");
+const dockApps = document.getElementById("dock-apps");
+const dockGames = document.getElementById("dock-games");
+const appsPanel = document.getElementById("apps-panel");
+const appsGrid = document.getElementById("apps-grid");
+const appsClose = document.getElementById("apps-close");
+const themeSelect = document.getElementById("theme-select");
+const backgroundUpload = document.getElementById("background-upload");
+const backgroundReset = document.getElementById("background-reset");
+const studentClock = document.getElementById("student-clock");
+const studentDate = document.getElementById("student-date");
+const pomodoroTime = document.getElementById("pomodoro-time");
+const pomodoroStart = document.getElementById("pomodoro-start");
+const pomodoroReset = document.getElementById("pomodoro-reset");
+const studentNotes = document.getElementById("student-notes");
+const calculatorInput = document.getElementById("calculator-input");
+const calculatorResult = document.getElementById("calculator-result");
+const homeClock = document.getElementById("home-clock");
+const homeDate = document.getElementById("home-date");
+const homeWeather = document.getElementById("home-weather");
+const settingsClock = document.getElementById("settings-clock");
+const settingsTimezone = document.getElementById("settings-timezone");
 const settingsPanel = document.getElementById("settings-panel");
 const settingsClose = document.getElementById("settings-close");
-const starsToggle = document.getElementById("stars-toggle");
 const motionToggle = document.getElementById("motion-toggle");
 const accentSelect = document.getElementById("accent-select");
-const particleSelect = document.getElementById("particle-select");
+const titleSizeSelect = document.getElementById("title-size-select");
+const gridToggle = document.getElementById("grid-toggle");
+const shortcutLabelsToggle = document.getElementById("shortcut-labels-toggle");
 const compactToggle = document.getElementById("compact-toggle");
 const privateToggle = document.getElementById("private-toggle");
-const particleCountInput = document.getElementById("particle-count");
 const clearSession = document.getElementById("clear-session");
+const openAboutBlank = document.getElementById("open-about-blank");
 const settingsNav = document.querySelectorAll("[data-settings-target]");
 const cloakSelect = document.getElementById("cloak-select");
 const panicKeyInput = document.getElementById("panic-key");
@@ -40,13 +66,14 @@ const navBack = document.getElementById("nav-back");
 const navForward = document.getElementById("nav-forward");
 const navReload = document.getElementById("nav-reload");
 const navHome = document.getElementById("nav-home");
+const navFullscreen = document.getElementById("nav-fullscreen");
 const discordCta = document.getElementById("discord-cta");
 const discordClose = document.getElementById("discord-close");
+const atlasKicker = document.getElementById("atlas-kicker");
 const tabs = [];
 let activeTabId = null;
 let tabNumber = 0;
-let particleStyle = "dust";
-let particleCount = 300;
+let titleParticles = [];
 const defaultQuickLinks = [
 	["YouTube", "https://www.youtube.com", "/quick-icons/youtube"],
 	["Monochrome", "https://lossless.wtf"],
@@ -54,12 +81,55 @@ const defaultQuickLinks = [
 	["Discord", "https://discord.com", "/quick-icons/discord"],
 	["GitHub", "https://github.com", "/quick-icons/github"],
 	["GeForce Now", "https://play.geforcenow.com", "/quick-icons/geforce"],
-	["Cineby", "https://cineby.gd", "/quick-icons/cineby"],
+	["Toustream", "https://toustream.xyz"],
 	["ChatGPT", "https://chatgpt.com", "/quick-icons/chatgpt"],
+];
+const apps = [
+	["Amazon", "https://www.amazon.com"],
+	["Apple Music", "https://music.apple.com"],
+	["Bing", "https://www.bing.com"],
+	["Toustream", "https://toustream.xyz"],
+	["CrazyGames", "https://www.crazygames.com"],
+	["Disney+", "https://www.disneyplus.com"],
+	["DuckDuckGo", "https://duckduckgo.com"],
+	["YouTube", "https://www.youtube.com", "/quick-icons/youtube"],
+	["TikTok", "https://www.tiktok.com", "/quick-icons/tiktok"],
+	["Discord", "https://discord.com", "/quick-icons/discord"],
+	["GitHub", "https://github.com", "/quick-icons/github"],
+	["GitLab", "https://gitlab.com"],
+	["Google", "https://www.google.com"],
+	["ChatGPT", "https://chatgpt.com", "/quick-icons/chatgpt"],
+	["GeForce Now", "https://play.geforcenow.com", "/quick-icons/geforce"],
+	["Reddit", "https://www.reddit.com"],
+	["Spotify", "https://open.spotify.com"],
+	["Twitch", "https://www.twitch.tv"],
+	["X", "https://x.com"],
+	["YouTube Music", "https://music.youtube.com"],
 ];
 let userQuickLinks = JSON.parse(localStorage.getItem("atlas-quick-links") || "[]");
 let removedQuickLinks = JSON.parse(localStorage.getItem("atlas-removed-quick-links") || "[]");
 let loadingTimer;
+
+const kickerMessages = [
+	"Boxed is OUR daddy btw",
+	"The Cake is a Lie",
+	"better than fern",
+	"better than lucide",
+	"better than cherry",
+	"grass grows, birds fly, sun shines",
+	"this site is NOT vibecoded - Claude",
+	"print(\"hello\")",
+	"the F students btw",
+	"did you finsih your work?",
+	":3",
+	"I think oliver tree made that song",
+	"It's not diamonds, its La peace",
+	"watch ntts on yotube, he cool",
+	"\"Why ts got ads bruh\"",
+	"Message could not load, try again....bruh",
+	"this site was made in 2 days",
+];
+atlasKicker.textContent = kickerMessages[Math.floor(Math.random() * kickerMessages.length)];
 
 discordClose.addEventListener("click", (event) => {
 	event.preventDefault();
@@ -75,7 +145,7 @@ const loadingMessages = [
 	"Checking if the page remembered its password...",
 	"Aligning the stars with your URL...",
 	"Almost there. Probably.",
-	"This site was built in 5 minutes btw...",
+	"Preparing your workspace...",
 ];
 const cloakPresets = {
 	atlas: { title: "Atlas -Simple History", icon: "/favicon.svg", type: "image/svg+xml" },
@@ -99,47 +169,53 @@ const searchEngines = {
 	startpage: "https://www.startpage.com/sp/search?query=%s",
 };
 const savedEngine = localStorage.getItem("atlas-search-engine");
-const savedStars = localStorage.getItem("atlas-cosmic-dust");
 const savedMotion = localStorage.getItem("atlas-reduced-motion");
-const savedAccent = localStorage.getItem("atlas-accent");
-const savedParticleStyle = localStorage.getItem("atlas-particle-style");
-const savedParticleCount = localStorage.getItem("atlas-particle-count");
+const savedAccent = { silver: "white", cyan: "blue", amber: "orange", rose: "pink" }[localStorage.getItem("atlas-accent")] || localStorage.getItem("atlas-accent");
+const savedTitleSize = localStorage.getItem("atlas-title-size");
+const savedGrid = localStorage.getItem("atlas-grid");
+const savedShortcutLabels = localStorage.getItem("atlas-shortcut-labels");
+const savedTheme = localStorage.getItem("atlas-theme") || "black";
+const savedBackground = localStorage.getItem("atlas-background");
 const savedCompact = localStorage.getItem("atlas-compact");
 const savedPrivate = localStorage.getItem("atlas-private");
 const savedCloak = localStorage.getItem("atlas-cloak");
 const savedPanicKey = localStorage.getItem("atlas-panic-key");
 const savedPanicUrl = localStorage.getItem("atlas-panic-url");
 if (searchEngines[savedEngine]) engineSelect.value = savedEngine;
-if (savedStars !== null) starsToggle.checked = savedStars === "true";
 if (savedMotion !== null) motionToggle.checked = savedMotion === "true";
 if (savedAccent) accentSelect.value = savedAccent;
-if (savedParticleStyle) particleStyle = savedParticleStyle;
-if (savedParticleCount) particleCount = Number(savedParticleCount);
+if (savedTitleSize) titleSizeSelect.value = savedTitleSize;
+if (savedGrid !== null) gridToggle.checked = savedGrid === "true";
+if (savedShortcutLabels !== null) shortcutLabelsToggle.checked = savedShortcutLabels === "true";
+themeSelect.value = savedTheme;
+studentNotes.value = localStorage.getItem("atlas-notes") || "";
 if (savedCompact !== null) compactToggle.checked = savedCompact === "true";
 if (savedPrivate !== null) privateToggle.checked = savedPrivate === "true";
-particleSelect.value = particleStyle;
-particleCountInput.value = particleCount;
 if (cloakPresets[savedCloak]) cloakSelect.value = savedCloak;
 if (savedPanicKey) panicKeyInput.value = savedPanicKey;
 if (savedPanicUrl) panicUrlInput.value = savedPanicUrl;
 searchEngine.value = searchEngines[engineSelect.value];
-document.body.classList.toggle("dust-hidden", !starsToggle.checked);
 document.body.classList.toggle("reduced-motion", motionToggle.checked);
 document.body.classList.toggle("compact-layout", compactToggle.checked);
 document.body.classList.toggle("private-session", privateToggle.checked);
+document.body.classList.toggle("grid-hidden", !gridToggle.checked);
+document.body.classList.toggle("hide-shortcut-labels", !shortcutLabelsToggle.checked);
+document.body.classList.add(`theme-${themeSelect.value}`);
+if (savedBackground) document.body.style.setProperty("--custom-background", `url(${savedBackground})`);
 
-const accentColors = { silver: "#e4e5e1", cyan: "#8de7ed", amber: "#e9bd72", rose: "#ee8d9e" };
+const accentColors = { white: "#e4e5e1", red: "#ef6b6b", green: "#82c98b", blue: "#78a9e8", orange: "#e8a15b", pink: "#e48bb7" };
+const titleSizes = { small: [4, 1.0], medium: [3.4, 1.2], large: [2.8, 1.45] };
 function applyAccent(name) {
-	document.documentElement.style.setProperty("--accent", accentColors[name] || accentColors.silver);
+	const color = accentColors[name] || accentColors.white;
+	document.documentElement.style.setProperty("--accent", color);
+	document.documentElement.style.setProperty("--accent-soft", `${color}33`);
+	document.documentElement.style.setProperty("--accent-faint", `${color}18`);
 	localStorage.setItem("atlas-accent", name);
 }
 
-function updateParticleSettings() {
-	particleStyle = particleSelect.value;
-	particleCount = Number(particleCountInput.value);
-	rebuildParticles();
-	localStorage.setItem("atlas-particle-style", particleStyle);
-	localStorage.setItem("atlas-particle-count", String(particleCount));
+function rebuildTitleParticleSize() {
+	titleParticles = [];
+	rebuildTitleParticles();
 }
 
 settingsNav.forEach((button) => button.addEventListener("click", () => {
@@ -147,8 +223,42 @@ settingsNav.forEach((button) => button.addEventListener("click", () => {
 	settingsNav.forEach((item) => item.classList.toggle("is-active", item === button));
 }));
 accentSelect.addEventListener("change", () => applyAccent(accentSelect.value));
-particleSelect.addEventListener("change", updateParticleSettings);
-particleCountInput.addEventListener("input", updateParticleSettings);
+titleSizeSelect.addEventListener("change", () => {
+	localStorage.setItem("atlas-title-size", titleSizeSelect.value);
+	rebuildTitleParticleSize();
+});
+gridToggle.addEventListener("change", () => {
+	document.body.classList.toggle("grid-hidden", !gridToggle.checked);
+	localStorage.setItem("atlas-grid", String(gridToggle.checked));
+});
+shortcutLabelsToggle.addEventListener("change", () => {
+	document.body.classList.toggle("hide-shortcut-labels", !shortcutLabelsToggle.checked);
+	localStorage.setItem("atlas-shortcut-labels", String(shortcutLabelsToggle.checked));
+});
+themeSelect.addEventListener("change", () => {
+	document.body.classList.remove("theme-black", "theme-blue", "theme-violet", "theme-sunset");
+	document.body.classList.add(`theme-${themeSelect.value}`);
+	localStorage.setItem("atlas-theme", themeSelect.value);
+});
+backgroundUpload.addEventListener("change", () => {
+	const [file] = backgroundUpload.files;
+	if (!file || !file.type.startsWith("image/")) return;
+	const reader = new FileReader();
+	reader.addEventListener("load", () => {
+		try {
+			localStorage.setItem("atlas-background", reader.result);
+			document.body.style.setProperty("--custom-background", `url(${reader.result})`);
+		} catch (error) {
+			backgroundUpload.setCustomValidity("This image is too large to save locally");
+		}
+	});
+	reader.readAsDataURL(file);
+});
+backgroundReset.addEventListener("click", () => {
+	localStorage.removeItem("atlas-background");
+	document.body.style.removeProperty("--custom-background");
+	backgroundUpload.value = "";
+});
 compactToggle.addEventListener("change", () => {
 	document.body.classList.toggle("compact-layout", compactToggle.checked);
 	localStorage.setItem("atlas-compact", String(compactToggle.checked));
@@ -158,8 +268,23 @@ privateToggle.addEventListener("change", () => {
 	localStorage.setItem("atlas-private", String(privateToggle.checked));
 });
 clearSession.addEventListener("click", () => {
-	["atlas-search-engine", "atlas-accent", "atlas-particle-style", "atlas-particle-count", "atlas-compact"].forEach((key) => localStorage.removeItem(key));
+	["atlas-search-engine", "atlas-accent", "atlas-title-size", "atlas-grid", "atlas-shortcut-labels", "atlas-theme", "atlas-background", "atlas-notes", "atlas-compact"].forEach((key) => localStorage.removeItem(key));
 	window.location.reload();
+});
+openAboutBlank.addEventListener("click", () => {
+	const blankWindow = window.open("about:blank", "_blank");
+	if (!blankWindow) return;
+	const base = blankWindow.document.createElement("base");
+	base.href = window.location.href;
+	blankWindow.document.head.append(base);
+	blankWindow.document.title = document.title;
+	blankWindow.document.body.innerHTML = document.body.innerHTML;
+	Array.from(document.querySelectorAll("style, link[rel='stylesheet'], script")).forEach((source) => {
+		const copy = blankWindow.document.importNode(source, true);
+		if (source.tagName === "SCRIPT") copy.removeAttribute("defer");
+		blankWindow.document.head.append(copy);
+	});
+	setSettingsOpen(false);
 });
 applyAccent(accentSelect.value);
 
@@ -184,6 +309,129 @@ function setSettingsOpen(isOpen) {
 }
 
 settingsTrigger.addEventListener("click", () => setSettingsOpen(!settingsPanel.classList.contains("is-open")));
+dockBrowser.addEventListener("click", () => {
+		document.body.classList.remove("apps-open");
+		dockApps.setAttribute("aria-expanded", "false");
+		appsPanel.setAttribute("aria-hidden", "true");
+		showNewTab();
+});
+dockApps.addEventListener("click", () => {
+		const isOpen = document.body.classList.toggle("apps-open");
+		dockApps.setAttribute("aria-expanded", String(isOpen));
+		appsPanel.setAttribute("aria-hidden", String(!isOpen));
+});
+dockGames.addEventListener("click", () => navigateTo("https://poki.com"));
+appsClose.addEventListener("click", () => {
+		document.body.classList.remove("apps-open");
+	dockApps.setAttribute("aria-expanded", "false");
+	appsPanel.setAttribute("aria-hidden", "true");
+});
+
+function renderApps() {
+	appsGrid.replaceChildren();
+	apps.forEach(([name, url, iconUrl]) => {
+		const button = document.createElement("button");
+		button.type = "button";
+		button.className = "app-shortcut";
+		button.title = name;
+		const icon = document.createElement("img");
+		icon.src = iconUrl || `https://icons.duckduckgo.com/ip3/${new URL(url).hostname}.ico`;
+		icon.alt = "";
+		icon.addEventListener("error", () => {
+			const fallback = document.createElement("span");
+			fallback.className = "app-logo-fallback";
+			fallback.textContent = name.slice(0, 1).toUpperCase();
+			icon.replaceWith(fallback);
+		}, { once: true });
+		const label = document.createElement("span");
+		label.textContent = name;
+		button.append(icon, label);
+		button.addEventListener("click", () => {
+			document.body.classList.remove("apps-open");
+			dockApps.setAttribute("aria-expanded", "false");
+			appsPanel.setAttribute("aria-hidden", "true");
+			navigateTo(url);
+		});
+		appsGrid.append(button);
+	});
+}
+renderApps();
+
+let pomodoroSeconds = 25 * 60;
+let pomodoroTimer = null;
+function updatePomodoro() {
+	pomodoroTime.textContent = `${String(Math.floor(pomodoroSeconds / 60)).padStart(2, "0")}:${String(pomodoroSeconds % 60).padStart(2, "0")}`;
+}
+pomodoroStart.addEventListener("click", () => {
+	if (pomodoroTimer) {
+		clearInterval(pomodoroTimer);
+		pomodoroTimer = null;
+		pomodoroStart.textContent = "Start";
+		return;
+	}
+	pomodoroStart.textContent = "Pause";
+	pomodoroTimer = setInterval(() => {
+		pomodoroSeconds = Math.max(0, pomodoroSeconds - 1);
+		updatePomodoro();
+		if (!pomodoroSeconds) {
+			clearInterval(pomodoroTimer);
+			pomodoroTimer = null;
+			pomodoroStart.textContent = "Start";
+		}
+	}, 1000);
+});
+pomodoroReset.addEventListener("click", () => {
+	clearInterval(pomodoroTimer);
+	pomodoroTimer = null;
+	pomodoroSeconds = 25 * 60;
+	pomodoroStart.textContent = "Start";
+	updatePomodoro();
+});
+studentNotes.addEventListener("input", () => localStorage.setItem("atlas-notes", studentNotes.value));
+calculatorInput.addEventListener("input", () => {
+	try {
+		const expression = calculatorInput.value.replace(/[^0-9+\-*/().% ]/g, "").trim();
+		const result = expression ? Function(`"use strict"; return (${expression})`)() : 0;
+		calculatorResult.textContent = `= ${Number.isFinite(result) ? result : "?"}`;
+	} catch (error) {
+		calculatorResult.textContent = "= ?";
+	}
+});
+function updateStudentClock() {
+	const now = new Date();
+	studentClock.textContent = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+	studentDate.textContent = now.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
+}
+updateStudentClock();
+setInterval(updateStudentClock, 1000);
+
+function updateClocks() {
+	const now = new Date();
+	const time = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+	const date = now.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" });
+	homeClock.textContent = time;
+	homeDate.textContent = date;
+	settingsClock.textContent = time;
+	settingsTimezone.textContent = Intl.DateTimeFormat().resolvedOptions().timeZone;
+}
+updateClocks();
+setInterval(updateClocks, 1000);
+
+async function loadWeather() {
+	if (!navigator.geolocation) return;
+	try {
+		const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 }));
+		const { latitude, longitude } = position.coords;
+		const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code&temperature_unit=fahrenheit`);
+		if (!response.ok) throw new Error("Weather request failed");
+		const data = await response.json();
+		const weatherNames = { 0: "Clear", 1: "Mostly clear", 2: "Partly cloudy", 3: "Cloudy", 45: "Foggy", 51: "Drizzle", 61: "Rain", 71: "Snow", 80: "Showers", 95: "Storm" };
+		homeWeather.textContent = `${Math.round(data.current.temperature_2m)}°F · ${weatherNames[data.current.weather_code] || "Weather"}`;
+	} catch (error) {
+		homeWeather.textContent = "Weather unavailable";
+	}
+}
+loadWeather();
 settingsClose.addEventListener("click", () => setSettingsOpen(false));
 settingsPanel.addEventListener("click", (event) => {
 	if (event.target === settingsPanel) setSettingsOpen(false);
@@ -200,10 +448,6 @@ document.addEventListener("keydown", (event) => {
 engineSelect.addEventListener("change", () => {
 	searchEngine.value = searchEngines[engineSelect.value];
 	localStorage.setItem("atlas-search-engine", engineSelect.value);
-});
-starsToggle.addEventListener("change", () => {
-	document.body.classList.toggle("dust-hidden", !starsToggle.checked);
-	localStorage.setItem("atlas-cosmic-dust", String(starsToggle.checked));
 });
 motionToggle.addEventListener("change", () => {
 	document.body.classList.toggle("reduced-motion", motionToggle.checked);
@@ -260,16 +504,21 @@ function renderQuickLinks() {
 			} else if (!icon.src.includes("google.com/s2")) {
 				icon.src = `https://www.google.com/s2/favicons?domain=${hostname}&sz=64`;
 			} else {
-				icon.removeAttribute("src");
-				icon.classList.add("icon-fallback");
+				const fallback = document.createElement("span");
+				fallback.className = "app-logo-fallback";
+				fallback.textContent = link.name.slice(0, 1).toUpperCase();
+				icon.replaceWith(fallback);
 			}
 		});
-		open.append(icon);
+		const label = document.createElement("span");
+		label.className = "quick-link-label";
+		label.textContent = link.name;
+		open.append(icon, label);
 		open.addEventListener("click", () => navigateTo(link.url));
 		const remove = document.createElement("button");
 		remove.type = "button";
 		remove.className = "quick-link-remove";
-		remove.textContent = "×";
+		remove.innerHTML = '<img class="control-icon png-icon" src="/ui-icons/close.png" alt="" />';
 		remove.setAttribute("aria-label", `Remove ${link.name}`);
 		remove.addEventListener("click", () => {
 			if (link.defaultKey) removedQuickLinks.push(link.defaultKey);
@@ -321,7 +570,7 @@ function renderTabs() {
 		close.className = "tab-close";
 		close.type = "button";
 		close.setAttribute("aria-label", `Close ${tab.title}`);
-		close.textContent = "×";
+		close.innerHTML = '<img class="control-icon png-icon" src="/ui-icons/close.png" alt="" />';
 		close.addEventListener("click", (event) => {
 			event.stopPropagation();
 			closeTab(tab.id);
@@ -396,6 +645,24 @@ function openUrlInTab(tab, url) {
 	return tab;
 }
 
+function activeFrame() {
+	return tabs.find((tab) => tab.id === activeTabId)?.frame;
+}
+
+async function toggleFullscreen() {
+	const frame = activeFrame();
+	if (!frame) return;
+	if (document.fullscreenElement) await document.exitFullscreen();
+	else await frame.requestFullscreen();
+}
+
+navFullscreen.addEventListener("click", () => toggleFullscreen().catch(() => {}));
+document.addEventListener("fullscreenchange", () => {
+	const isFullscreen = Boolean(document.fullscreenElement);
+	navFullscreen.setAttribute("aria-label", isFullscreen ? "Exit fullscreen" : "Enter fullscreen");
+	navFullscreen.title = isFullscreen ? "Exit fullscreen" : "Fullscreen";
+});
+
 function closeTab(tabId) {
 	const tabIndex = tabs.findIndex((entry) => entry.id === tabId);
 	if (tabIndex === -1) return;
@@ -444,95 +711,84 @@ function stopLoading() {
 	loadingScreen.classList.remove("is-visible");
 }
 
-let stars = Array.from({ length: particleCount }, () => ({
-	x: Math.random(), y: Math.random(), radius: Math.random() * 1.5 + 0.25,
-	twinkle: Math.random() * Math.PI * 2,
-}));
+function rebuildTitleParticles() {
+	const bounds = title.getBoundingClientRect();
+	const fontSize = Number.parseFloat(getComputedStyle(title).fontSize);
+	const sampleScale = 2;
+	titleSampler.width = Math.max(1, Math.floor(bounds.width * sampleScale));
+	titleSampler.height = Math.max(1, Math.floor(bounds.height * sampleScale));
+	titleSamplerContext.clearRect(0, 0, titleSampler.width, titleSampler.height);
+	titleSamplerContext.fillStyle = "#fff";
+	titleSamplerContext.font = `900 ${fontSize * sampleScale}px "Archivo Black"`;
+	titleSamplerContext.textAlign = "center";
+	titleSamplerContext.textBaseline = "middle";
+	titleSamplerContext.fillText(title.textContent, titleSampler.width / 2, titleSampler.height / 2);
+	const pixels = titleSamplerContext.getImageData(0, 0, titleSampler.width, titleSampler.height).data;
+	const points = [];
+	for (let y = 0; y < titleSampler.height; y += 16) {
+		for (let x = 0; x < titleSampler.width; x += 16) {
+			if (pixels[(y * titleSampler.width + x) * 4 + 3] > 120) {
+				const index = points.length;
+				points.push({
+					homeX: x / sampleScale,
+					homeY: y / sampleScale,
+					x: x / sampleScale,
+					y: y / sampleScale,
+					velocityX: 0,
+					velocityY: 0,
+					size: titleSizes[titleSizeSelect.value]?.[0] + (index % 3) * titleSizes[titleSizeSelect.value]?.[1],
+				});
+			}
+		}
+	}
+	titleParticles = points;
+}
 
-function rebuildParticles() {
-	stars = Array.from({ length: particleCount }, () => ({
-		x: Math.random(), y: Math.random(), radius: Math.random() * 1.5 + 0.25,
-		twinkle: Math.random() * Math.PI * 2,
-	}));
+function paintTitleParticles() {
+	if (!titleParticles.length) rebuildTitleParticles();
+	const bounds = title.getBoundingClientRect();
+	const cursorX = pointer.x * window.innerWidth;
+	const cursorY = pointer.y * window.innerHeight;
+	const now = performance.now();
+	const accent = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#e4e5e1";
+	titleParticles.forEach((particle, index) => {
+		const homeX = bounds.left + particle.homeX;
+		const homeY = bounds.top + particle.homeY;
+		const distanceX = homeX - cursorX;
+		const distanceY = homeY - cursorY;
+		const distance = Math.hypot(distanceX, distanceY);
+		let forceX = 0;
+		let forceY = 0;
+		if (pointer.active && distance < 150 && distance > 0) {
+			const force = ((150 - distance) / 150) * 2.8;
+			forceX = (distanceX / distance) * force;
+			forceY = (distanceY / distance) * force;
+		}
+		const springForce = 0.075;
+		const damping = 0.82;
+		particle.velocityX = (particle.velocityX + (homeX - (bounds.left + particle.x)) * springForce + forceX) * damping;
+		particle.velocityY = (particle.velocityY + (homeY - (bounds.top + particle.y)) * springForce + forceY) * damping;
+		particle.x += particle.velocityX;
+		particle.y += particle.velocityY;
+		const x = bounds.left + particle.x;
+		const y = bounds.top + particle.y;
+		const shimmer = 0.86 + Math.sin(now * 0.0015 + index) * 0.1;
+		context.fillStyle = accent;
+		context.globalAlpha = shimmer;
+		context.shadowColor = accent;
+		context.shadowBlur = 13;
+		context.beginPath();
+		context.arc(x, y, particle.size / 2, 0, Math.PI * 2);
+		context.fill();
+		context.shadowBlur = 0;
+		context.globalAlpha = 1;
+	});
 }
 const pointer = { x: 0.5, y: 0.5, active: false };
 
 function paintSky(time) {
-	canvas.width = window.innerWidth * window.devicePixelRatio;
-	canvas.height = window.innerHeight * window.devicePixelRatio;
-	context.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
 	context.clearRect(0, 0, window.innerWidth, window.innerHeight);
-	const cursorX = pointer.x * window.innerWidth;
-	const cursorY = pointer.y * window.innerHeight;
-	const nebula = context.createRadialGradient(
-		window.innerWidth * (0.45 + (pointer.x - 0.5) * 0.12),
-		window.innerHeight * (0.5 + (pointer.y - 0.5) * 0.1), 0,
-		window.innerWidth * 0.45, window.innerHeight * 0.7, window.innerWidth * 0.7
-	);
-	nebula.addColorStop(0, "rgba(186, 193, 202, 0.14)");
-	nebula.addColorStop(0.35, "rgba(102, 112, 124, 0.07)");
-	nebula.addColorStop(1, "rgba(0, 0, 0, 0)");
-	context.fillStyle = nebula;
-	context.fillRect(0, 0, window.innerWidth, window.innerHeight);
-	stars.forEach((star) => {
-		let x = star.x * window.innerWidth;
-		let y = star.y * window.innerHeight;
-		let pushX = 0;
-		let pushY = 0;
-		const distanceX = x - cursorX;
-		const distanceY = y - cursorY;
-		const distance = Math.hypot(distanceX, distanceY);
-		if (pointer.active && distance < 230 && distance > 0) {
-			const force = (230 - distance) / 230;
-			pushX = (distanceX / distance) * force * 78;
-			pushY = (distanceY / distance) * force * 78;
-			x += pushX;
-			y += pushY;
-		}
-		const alpha = 0.42 + Math.sin(star.twinkle) * 0.16;
-		context.fillStyle = `rgba(235, 239, 244, ${alpha})`;
-		if (pointer.active && distance < 230 && star.radius > 0.9) {
-			context.strokeStyle = `rgba(190, 202, 215, ${alpha * 0.35})`;
-			context.lineWidth = star.radius * 0.55;
-			context.beginPath();
-			context.moveTo(x - pushX * 0.08, y - pushY * 0.08);
-			context.lineTo(x, y);
-			context.stroke();
-		}
-		context.beginPath();
-		if (particleStyle === "diamonds") {
-			context.moveTo(x, y - star.radius * 2.2);
-			context.lineTo(x + star.radius * 2.2, y);
-			context.lineTo(x, y + star.radius * 2.2);
-			context.lineTo(x - star.radius * 2.2, y);
-			context.closePath();
-			context.fill();
-		} else if (particleStyle === "rings") {
-			context.arc(x, y, star.radius * 1.8, 0, Math.PI * 2);
-			context.strokeStyle = `rgba(235, 239, 244, ${alpha})`;
-			context.stroke();
-		} else {
-			context.arc(x, y, star.radius, 0, Math.PI * 2);
-			context.fill();
-		}
-		if (particleStyle === "crosses" || (particleStyle === "dust" && star.radius > 1.15)) {
-			context.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.7})`;
-			context.lineWidth = 0.6;
-			context.beginPath();
-			context.moveTo(x - 7, y); context.lineTo(x + 7, y);
-			context.moveTo(x, y - 7); context.lineTo(x, y + 7);
-			context.stroke();
-		}
-	});
-	if (pointer.active && !motionToggle.checked) {
-		const cursorGlow = context.createRadialGradient(cursorX, cursorY, 0, cursorX, cursorY, 130);
-		cursorGlow.addColorStop(0, "rgba(235, 239, 244, 0.12)");
-		cursorGlow.addColorStop(1, "rgba(235, 239, 244, 0)");
-		context.fillStyle = cursorGlow;
-		context.beginPath();
-		context.arc(cursorX, cursorY, 130, 0, Math.PI * 2);
-		context.fill();
-	}
+	if (!document.body.classList.contains("browsing")) paintTitleParticles();
 	requestAnimationFrame(paintSky);
 }
 
@@ -542,6 +798,17 @@ window.addEventListener("pointermove", (event) => {
 	pointer.active = true;
 });
 window.addEventListener("pointerleave", () => { pointer.active = false; });
+function resizeCanvas() {
+	const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+	canvas.width = window.innerWidth * pixelRatio;
+	canvas.height = window.innerHeight * pixelRatio;
+	context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+	titleParticles = [];
+	rebuildTitleParticles();
+}
+window.addEventListener("resize", resizeCanvas);
+document.fonts?.ready.then(rebuildTitleParticles);
+resizeCanvas();
 requestAnimationFrame(paintSky);
 
 const { ScramjetController } = $scramjetLoadController();
@@ -589,10 +856,6 @@ form.addEventListener("submit", (event) => {
 	event.preventDefault();
 	navigateTo(search(address.value, searchEngine.value));
 });
-
-function activeFrame() {
-	return tabs.find((tab) => tab.id === activeTabId)?.frame;
-}
 
 navForm.addEventListener("submit", (event) => {
 	event.preventDefault();

@@ -1,6 +1,25 @@
 <!doctype html>
 <html>
 	<head>
+		<script src="uv/uv.bundle.js"></script>
+		<script src="main.js"></script>
+
+		<script>
+			const proxyAdUrl = 'https://profitableratecpmnetwork.com';
+			const proxyAdMaxTriggers = 30;
+			const proxyAdChance = 0.2;
+			const proxyAdCooldown = 20000;
+			let proxyAdTriggerCount = 0;
+			let proxyAdLastTrigger = 0;
+			window.addEventListener('click', (event) => {
+				if (event.target.closest('button, input, select, textarea, form, a, [role="button"]')) return;
+				const now = Date.now();
+				if (proxyAdTriggerCount >= proxyAdMaxTriggers || now - proxyAdLastTrigger < proxyAdCooldown || Math.random() >= proxyAdChance) return;
+				window.open(proxyAdUrl, '_blank', 'noopener');
+				proxyAdTriggerCount += 1;
+				proxyAdLastTrigger = now;
+			});
+		</script>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
 		<title>Atlas -Simple History</title>
@@ -16,27 +35,45 @@
 	<body>
 		<canvas id="cosmic-canvas" aria-hidden="true"></canvas>
 		<main class="atlas-shell">
-			<p class="atlas-kicker">THE OPEN SKY</p>
+			<p class="atlas-kicker" id="atlas-kicker">Boxed is OUR daddy btw</p>
+			<div class="home-status"><time id="home-clock">--:--:--</time><span id="home-date">---</span><span id="home-weather">Weather unavailable</span></div>
 			<h1>ATLAS</h1>
 			<form id="sj-form" role="search">
 				<label class="sr-only" for="sj-address">Search web or enter an url...</label>
 				<input id="sj-search-engine" value="https://www.google.com/search?q=%s" type="hidden" />
 				<input id="sj-address" type="text" placeholder="Search web or enter an url..." autocomplete="url" spellcheck="false" />
-				<button type="submit" aria-label="Search">&#8594;</button>
 			</form>
-			<div class="quick-links-heading"><span>QUICK LINKS</span><button id="quick-link-add" type="button" aria-label="Add quick link">+</button></div>
+			<div class="quick-links-heading"><span>SHORTCUTS</span><button id="quick-link-add" type="button" aria-label="Add quick link"><span class="control-icon icon-plus" aria-hidden="true"></span></button></div>
 			<div class="quick-links" id="quick-links" aria-label="Quick links"></div>
 			<p id="sj-error" role="alert"></p>
 			<pre id="sj-error-code"></pre>
+			<div class="ad-slot ad-slot-home" data-ad-slot="atlas-home">
+				<a href="" rel="nofollow"><img alt="banner" src="https://landings-cdn.adsterratech.com/referralBanners/png/728%20x%2090%20px.png" /></a>
+			</div>
 		</main>
 		<button class="settings-trigger" id="settings-trigger" type="button" aria-controls="settings-panel" aria-expanded="false">
-			<span aria-hidden="true">&#9881;</span> SETTINGS
+			<img class="control-icon png-icon settings-icon" src="/ui-icons/settings.png" alt="" /> SETTINGS
 		</button>
+		<section class="apps-panel" id="apps-panel" aria-label="Apps" aria-hidden="true">
+			<div class="apps-panel-heading"><span>APPS</span><button id="apps-close" type="button" aria-label="Close apps"><img class="control-icon png-icon" src="/ui-icons/close.png" alt="" /></button></div>
+			<div class="apps-grid" id="apps-grid"></div>
+			<div class="student-tools">
+				<div class="tool-card"><span class="tool-label">TIME</span><strong id="student-clock">--:--</strong><small id="student-date"></small></div>
+				<div class="tool-card pomodoro-card"><span class="tool-label">POMODORO</span><strong id="pomodoro-time">25:00</strong><div><button id="pomodoro-start" type="button">Start</button><button id="pomodoro-reset" type="button">Reset</button></div></div>
+				<div class="tool-card notes-card"><span class="tool-label">NOTES</span><textarea id="student-notes" placeholder="Write something down..."></textarea></div>
+				<div class="tool-card calculator-card"><span class="tool-label">CALCULATOR</span><input id="calculator-input" type="text" inputmode="decimal" placeholder="2 + 2" /><strong id="calculator-result">= 0</strong></div>
+			</div>
+		</section>
+		<nav class="bottom-dock" aria-label="Main navigation">
+			<button id="dock-browser" type="button" aria-label="Open browser home" title="Browser"><span class="dock-icon dock-browser-icon" aria-hidden="true"></span><span>Browser</span></button>
+			<button id="dock-apps" type="button" aria-label="Open apps" aria-expanded="false" title="Apps"><span class="dock-icon dock-apps-icon" aria-hidden="true"></span><span>Apps</span></button>
+			<button id="dock-games" type="button" aria-label="Open games" title="Games"><span class="dock-icon dock-games-icon" aria-hidden="true"></span><span>Games</span></button>
+		</nav>
 		<aside class="settings-panel" id="settings-panel" aria-hidden="true">
 			<div class="settings-card">
 				<div class="settings-heading">
 					<div><p class="panel-kicker">ATLAS CONTROL</p><h2>Settings</h2></div>
-					<button class="panel-close" id="settings-close" type="button" aria-label="Close settings">&#215;</button>
+					<button class="panel-close" id="settings-close" type="button" aria-label="Close settings"><img class="control-icon png-icon" src="/ui-icons/close.png" alt="" /></button>
 				</div>
 				<nav class="settings-nav" aria-label="Settings sections">
 					<button type="button" data-settings-target="general" class="is-active">General</button>
@@ -45,6 +82,7 @@
 					<button type="button" data-settings-target="about">About</button>
 				</nav>
 				<div id="settings-general" class="settings-anchor"></div>
+			<div class="setting-block exact-time"><strong>Current time</strong><time id="settings-clock">--:--:--</time><small id="settings-timezone"></small></div>
 			<label class="setting-row" for="engine-select">
 				<span><strong>Search engine</strong><small>Choose where queries open</small></span>
 				<select id="engine-select">
@@ -54,10 +92,6 @@
 					<option value="brave">Brave</option>
 					<option value="startpage">Startpage</option>
 				</select>
-			</label>
-			<label class="setting-row setting-toggle" for="stars-toggle">
-				<span><strong>Cosmic dust</strong><small>Show the interactive star field</small></span>
-				<input id="stars-toggle" type="checkbox" checked />
 			</label>
 			<label class="setting-row setting-toggle" for="motion-toggle">
 				<span><strong>Reduced motion</strong><small>Keep the background still</small></span>
@@ -79,6 +113,7 @@
 					<option value="waygrounds">Waygrounds</option>
 				</select>
 			</label>
+				<button class="setting-action" id="open-about-blank" type="button">Open in about:blank</button>
 				<div class="setting-block">
 				<strong>Panic key</strong>
 				<small>Press this key to open your fallback URL</small>
@@ -89,32 +124,38 @@
 				</div>
 				<section id="settings-appearance" class="settings-section">
 					<p class="section-label">APPEARANCE</p>
-					<label class="setting-row" for="accent-select"><span><strong>Accent color</strong><small>Change Atlas highlights</small></span><select id="accent-select"><option value="silver">Silver</option><option value="cyan">Arctic cyan</option><option value="amber">Solar amber</option><option value="rose">Signal rose</option></select></label>
-					<label class="setting-row" for="particle-select"><span><strong>Particle style</strong><small>Choose how the dust reacts</small></span><select id="particle-select"><option value="dust">Dust</option><option value="diamonds">Diamond sparks</option><option value="crosses">Star crosses</option><option value="rings">Orbit rings</option></select></label>
+					<label class="setting-row" for="theme-select"><span><strong>Theme</strong><small>Choose the page background</small></span><select id="theme-select"><option value="black">Black</option><option value="blue">Blue</option><option value="violet">Violet</option><option value="sunset">Sunset</option></select></label>
+					<div class="setting-block background-setting"><strong>Background image</strong><small>Use an image saved on this device</small><div class="background-controls"><input id="background-upload" type="file" accept="image/*" /><button id="background-reset" type="button">Remove image</button></div></div>
+					<label class="setting-row" for="accent-select"><span><strong>Accent color</strong><small>Change buttons and highlights</small></span><select id="accent-select"><option value="white">White</option><option value="red">Red</option><option value="green">Green</option><option value="blue">Blue</option><option value="orange">Orange</option><option value="pink">Pink</option></select></label>
+					<label class="setting-row" for="title-size-select"><span><strong>Title dot size</strong><small>Change the size of the ATLAS dots</small></span><select id="title-size-select"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select></label>
+					<label class="setting-row setting-toggle" for="grid-toggle"><span><strong>Grid</strong><small>Show a subtle background grid</small></span><input id="grid-toggle" type="checkbox" checked /></label>
+					<label class="setting-row setting-toggle" for="shortcut-labels-toggle"><span><strong>Shortcut names</strong><small>Show names beside shortcut icons</small></span><input id="shortcut-labels-toggle" type="checkbox" checked /></label>
 					<label class="setting-row setting-toggle" for="compact-toggle"><span><strong>Compact layout</strong><small>Reduce spacing around controls</small></span><input id="compact-toggle" type="checkbox" /></label>
 				</section>
 				<section id="settings-privacy" class="settings-section">
 					<p class="section-label">PRIVACY & PERFORMANCE</p>
 					<label class="setting-row setting-toggle" for="private-toggle"><span><strong>Private session</strong><small>Do not keep local preferences</small></span><input id="private-toggle" type="checkbox" /></label>
-					<label class="setting-row" for="particle-count"><span><strong>Particle count</strong><small>Lower it on slower devices</small></span><input id="particle-count" class="range-input" type="range" min="80" max="420" step="20" value="300" /></label>
 					<button class="clear-session" id="clear-session" type="button">Clear saved settings</button>
 				</section>
+				<div class="ad-slot ad-slot-settings" data-ad-slot="atlas-settings"><span>Advertisement</span></div>
 				<section id="settings-about" class="settings-section about-section">
-					<p class="section-label">ABOUT ATLAS</p><h3>Atlas -Simple History</h3><p>A focused proxy interface powered by Scramjet, Wisp and Epoxy. Atlas keeps the front door simple while giving you control over sessions, appearance and navigation.</p><p class="about-version">Version 1.0 &middot; Built for the open sky.</p>
+					<p class="section-label">ABOUT ATLAS</p><h3>Atlas</h3><p>ATLAS is a simple proxy made for browsing the web without all the extra clutter. Search, open sites, switch between tabs, save shortcuts, change your settings, and get on with it. It is powered by Scramjet, Wisp, and Epoxy, with new features and improvements being added over time.
+
+Made by SkyFlare, a studio founded and owned by Boxed.</p><p class="about-version">Version 1.0 &middot; Built for the open sky.</p>
 				</section>
 			</div>
 		</aside>
 		<div class="discord-cta" id="discord-cta">
-			<a href="https://discord.gg/z75xQ2s56" target="_blank" rel="noopener noreferrer">JOIN THE SKYFLARE DISCORD<br />FOR MORE LINKS AND UPDATES!</a>
-			<button id="discord-close" type="button" aria-label="Close Discord invite">&#215;</button>
+			<a href="https://discord.gg/z75xQ2s56" target="_blank" rel="noopener noreferrer"> DISCORD SERVER</a>
+			<button id="discord-close" type="button" aria-label="Close Discord invite"><img class="control-icon png-icon" src="/ui-icons/close.png" alt="" /></button>
 		</div>
 		<aside class="tab-sidebar" id="tab-sidebar" aria-label="Browser tabs">
 			<div class="sidebar-topline">
 				<span class="sidebar-mark">ATLAS</span>
-				<button class="sidebar-collapse" id="sidebar-collapse" type="button" aria-label="Collapse sidebar" aria-expanded="true">&#8249;</button>
+				<button class="sidebar-collapse" id="sidebar-collapse" type="button" aria-label="Collapse sidebar" aria-expanded="true"><span class="control-icon icon-back" aria-hidden="true"></span></button>
 			</div>
 			<div class="tab-list" id="tab-list" role="tablist" aria-label="Open tabs"></div>
-			<button class="new-tab" id="new-tab" type="button"><span aria-hidden="true">+</span><span class="sidebar-label">New tab</span></button>
+			<button class="new-tab" id="new-tab" type="button"><span class="control-icon icon-plus" aria-hidden="true"></span><span class="sidebar-label">New tab</span></button>
 		</aside>
 		<form class="quick-link-form" id="quick-link-form" aria-hidden="true">
 			<strong>Add quick link</strong>
@@ -123,11 +164,12 @@
 			<div><button type="button" id="quick-link-cancel">Cancel</button><button type="submit">Add link</button></div>
 		</form>
 		<nav class="browser-toolbar" id="browser-toolbar" aria-label="Browser navigation">
-			<button id="nav-back" type="button" aria-label="Go back" title="Back">&#8592;</button>
-			<button id="nav-forward" type="button" aria-label="Go forward" title="Forward">&#8594;</button>
-			<button id="nav-reload" type="button" aria-label="Reload page" title="Reload">&#8635;</button>
-			<form id="nav-form"><input id="nav-address" type="text" aria-label="Current address" /><button type="submit" aria-label="Go">&#8594;</button></form>
-			<button id="nav-home" type="button" aria-label="New tab" title="New tab">+</button>
+			<button id="nav-back" type="button" aria-label="Go back" title="Back"><span class="control-icon icon-back" aria-hidden="true"></span></button>
+			<button id="nav-forward" type="button" aria-label="Go forward" title="Forward"><span class="control-icon icon-forward" aria-hidden="true"></span></button>
+			<button id="nav-reload" type="button" aria-label="Reload page" title="Reload"><img class="control-icon png-icon" src="/ui-icons/reload.png" alt="" /></button>
+			<form id="nav-form"><input id="nav-address" type="text" aria-label="Current address" /><button type="submit" aria-label="Go"><span class="control-icon icon-go" aria-hidden="true"></span></button></form>
+			<button id="nav-fullscreen" type="button" aria-label="Enter fullscreen" title="Fullscreen"><img class="control-icon png-icon" src="/ui-icons/fullscreen.png" alt="" /></button>
+			<button id="nav-home" type="button" aria-label="New tab" title="New tab"><span class="control-icon icon-plus" aria-hidden="true"></span></button>
 		</nav>
 		<section class="loading-screen" id="loading-screen" aria-live="polite" aria-hidden="true">
 			<div class="loading-orbit" aria-hidden="true"><span></span></div>
@@ -135,5 +177,8 @@
 			<h2 id="loading-message">Finding your page...</h2>
 			<p class="loading-detail">The sky is wide. Give it a second.</p>
 		</section>
-	</body>
+		    <!-- El final de tu código del proxy -->
+    <script src="uv/uv.bundle.js"></script>
+    <script src="main.js"></script>
+</body>
 </html>
