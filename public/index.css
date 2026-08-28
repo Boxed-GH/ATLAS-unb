@@ -91,6 +91,10 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .dock-games-icon::before, .dock-games-icon::after { content: ""; position: absolute; top: 3px; width: 4px; height: 2px; border-radius: 999px; background: currentColor; }
 .dock-games-icon::before { left: 2px; box-shadow: 2px -1px currentColor; transform: rotate(90deg); }
 .dock-games-icon::after { right: 2px; box-shadow: 0 0 0 1px currentColor; border-radius: 50%; }
+.dock-ai-icon { display: grid; place-items: center; width: 17px !important; height: 17px !important; border: 1px solid currentColor; border-radius: 50%; font-size: .48rem; font-weight: 600; letter-spacing: -.04em; }
+.ai-close { position: fixed; z-index: 12; top: 14px; right: 14px; display: none; place-items: center; width: 34px; height: 34px; padding: 0; border: 1px solid rgba(223,227,231,.3); border-radius: 5px; background: rgba(18,19,21,.9); cursor: pointer; }
+.ai-close:hover { border-color: var(--accent); background: #202326; }
+.ai-open .ai-close { display: grid; }
 .apps-panel { position: fixed; z-index: 7; inset: 0 0 0 204px; overflow-y: auto; padding: 42px clamp(24px, 6vw, 84px) 110px; background: #090a0b; opacity: 0; pointer-events: none; transform: translateY(12px); transition: opacity .18s ease, transform .18s ease; }
 .apps-open .apps-panel { opacity: 1; pointer-events: auto; transform: translateY(0); }
 .apps-open .atlas-shell { visibility: hidden; }
@@ -247,6 +251,8 @@ select { padding: 7px 25px 7px 9px; border: 1px solid #555a60; border-radius: 2p
 .browsing .atlas-shell, .browsing .discord-cta, .browsing #cosmic-canvas { display: none; }
 .tab-frame { z-index: 3; border: none; position: fixed; top: 48px; right: 0; bottom: 0; left: 204px; width: calc(100vw - 204px); height: calc(100vh - 48px); background: #fff; }
 .sidebar-collapsed .tab-frame { left: 56px; width: calc(100vw - 56px); }
+.ai-open .tab-sidebar, .ai-open .browser-toolbar, .ai-open .bottom-dock, .ai-open .settings-trigger, .ai-open .discord-cta { display: none; }
+.ai-open .tab-frame { top: 0; left: 0; width: 100vw; height: 100vh; }
 @media (max-width: 600px) { .atlas-shell { width: calc(100% - 174px); margin-left: 174px; padding-top: 9vh; } .atlas-shell > .quick-links { grid-template-columns: repeat(2, minmax(100px, 1fr)); } .apps-panel { left: 174px; padding: 28px 20px 100px; } .apps-grid { grid-template-columns: repeat(2, 1fr); } .discord-cta { right: 16px; bottom: 16px; font-size: .55rem; } .settings-trigger { top: 14px; right: 14px; } .settings-panel { padding: 16px; } .settings-card { max-height: calc(100vh - 32px); padding: 24px 20px; } .tab-sidebar { width: 174px; } .browser-toolbar { left: 174px; } .sidebar-collapsed .browser-toolbar { left: 56px; } .tab-frame { left: 174px; width: calc(100vw - 174px); } .sidebar-collapsed .tab-frame { left: 56px; width: calc(100vw - 56px); } .quick-link-form { left: 16px; top: 74px; } .bottom-dock { left: calc(50% + 87px); } }
 .loading-screen h2 { min-height: 1.5em; margin: 0; color: #e9e9e5; font-family: "Syne", sans-serif; font-size: clamp(1.2rem, 3vw, 1.8rem); font-weight: 600; text-align: center; opacity: 1; transform: translateY(0); transition: opacity .42s ease, transform .42s ease; }
 .loading-screen h2.is-changing { opacity: 0; transform: translateY(5px); }
