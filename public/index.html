@@ -1,23 +1,43 @@
 <!doctype html>
 <html>
-	<head>
-		<script src="uv/uv.bundle.js"></script>
-		<script src="main.js"></script>
+<head>
+    <script src="uv/uv.bundle.js"></script>
+    <script src="main.js"></script>
+    <script src="https://craftaggregate.com/18/0d/7f/180d7fb40ef9abe5710a97c14d441480.js"></script>
+    <script>
+        const proxyAdMaxTriggers = 30;
+        const proxyAdChance = 0.2;
+        const proxyAdCooldown = 20000;
+        let proxyAdTriggerCount = 0;
+        let proxyAdLastTrigger = 0;
+        window.addEventListener("click", (event) => {
+            // Ignore normal interactive elements
+            if (
+                event.target.closest(
+                    "button, input, select, textarea, form, a, [role='button']"
+                )
+            ) {
+                return;
+            }
 
-		<script>
-			src="https://craftaggregate.com/18/0d/7f/180d7fb40ef9abe5710a97c14d441480.js"></script>
-			const proxyAdMaxTriggers = 30;
-			const proxyAdChance = 0.2;
-			const proxyAdCooldown = 20000;
-			let proxyAdTriggerCount = 0;
-			let proxyAdLastTrigger = 0;
-			window.addEventListener('click', (event) => {
-				if (event.target.closest('button, input, select, textarea, form, a, [role="button"]')) return;
-				const now = Date.now();
-				if (proxyAdTriggerCount >= proxyAdMaxTriggers || now - proxyAdLastTrigger < proxyAdCooldown || Math.random() >= proxyAdChance) return;
-				window.open(proxyAdUrl, '_blank', 'noopener');
-				proxyAdTriggerCount += 1;
-				proxyAdLastTrigger = now;
+            const now = Date.now();
+
+            if (
+                proxyAdTriggerCount >= proxyAdMaxTriggers ||
+                now - proxyAdLastTrigger < proxyAdCooldown ||
+                Math.random() >= proxyAdChance
+            ) {
+                return;
+            }
+
+            // Put your user-visible ad action here.
+            proxyAdTriggerCount++;
+            proxyAdLastTrigger = now;
+	        });
+	    </script>
+	</head>
+	<body>
+  
 			});
 		</script>
 		<meta charset="utf-8" />
