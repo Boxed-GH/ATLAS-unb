@@ -15,6 +15,8 @@ const settingsTrigger = document.getElementById("settings-trigger");
 const dockBrowser = document.getElementById("dock-browser");
 const dockApps = document.getElementById("dock-apps");
 const dockGames = document.getElementById("dock-games");
+const dockAi = document.getElementById("dock-ai");
+const aiClose = document.getElementById("ai-close");
 const appsPanel = document.getElementById("apps-panel");
 const appsGrid = document.getElementById("apps-grid");
 const appsClose = document.getElementById("apps-close");
@@ -320,7 +322,18 @@ dockApps.addEventListener("click", () => {
 		dockApps.setAttribute("aria-expanded", String(isOpen));
 		appsPanel.setAttribute("aria-hidden", String(!isOpen));
 });
-dockGames.addEventListener("click", () => navigateTo("https://mercury-unbl.lovable.app"));
+dockGames.addEventListener("click", () => navigateTo("https://ofogames.com/"));
+dockAi.addEventListener("click", () => {
+	document.body.classList.remove("apps-open");
+	dockApps.setAttribute("aria-expanded", "false");
+	appsPanel.setAttribute("aria-hidden", "true");
+	document.body.classList.add("ai-open");
+	navigateTo("https://venice.ai/chat/agent");
+});
+aiClose.addEventListener("click", () => {
+	document.body.classList.remove("ai-open");
+	showNewTab();
+});
 appsClose.addEventListener("click", () => {
 		document.body.classList.remove("apps-open");
 	dockApps.setAttribute("aria-expanded", "false");
