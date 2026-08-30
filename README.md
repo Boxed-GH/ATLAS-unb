@@ -82,8 +82,6 @@ The homepage focuses on three things:
 
 There are no unnecessary dashboards or huge collections of links taking over the screen.
 
-![ATLAS homepage](docs/atlas-home.png)
-
 ---
 
 # Installation
